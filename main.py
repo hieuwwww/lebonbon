@@ -108,7 +108,7 @@ def main():
                             user_input = ""
                     else:
                         user_input = ""
-                elif event.unicode.isalpha() or event.key == pygame.K_SPACE:
+                elif event.unicode or event.key == pygame.K_SPACE:
                     user_input += event.unicode
 
         word.update_color(user_input)
