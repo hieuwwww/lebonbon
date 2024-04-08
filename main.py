@@ -22,10 +22,10 @@ GREEN = (0, 255, 0)
 SPEED_FACTOR = 0.3
 
 class Word:
-    def __init__(self, x, y):
+    def __init__(self, x, y, word):
         self.x = x
         self.y = y
-        self.text = generate_word()
+        self.text = word
         self.colors = [BLACK] * len(self.text)
         # Tính toán tốc độ dựa trên số lượng chữ cái trong từ
         self.speed = 5 - len(self.text) * SPEED_FACTOR
@@ -68,19 +68,61 @@ def main():
     background_image = pygame.transform.scale(background_image, (WIDTH, HEIGHT))
 
     # Tạo tọa độ ban đầu của từ
-    x = random.randrange(0, WIDTH - 60)
+    x = random.randrange(0, WIDTH - 200)
     y = 0
 
-    word = Word(x, y)
+    word = Word(x, y,generate_word())
     user_input = ""
 
     # Phát nhạc nền
     pygame.mixer.music.load("background_music.mp3")
     pygame.mixer.music.play(-1)  # -1 để phát lại liên tục
 
-    game_over = False
+    # Màn hình bắt đầu
+    game_started = False
+    start_button = Word(WIDTH / 2 - 40, HEIGHT / 2, "start")
+    while not game_started:
+        win.blit(background_image, (0, 0))  # Vẽ ảnh nền
+        start_button.draw()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_BACKSPACE:
+                    user_input = user_input[:-1]
+                elif event.key == pygame.K_SPACE or event.key == pygame.K_RETURN:
+                    if user_input == start_button.text[:len(user_input)]:
+                        if len(user_input) < len(start_button.text):
+                            user_input += event.unicode
+                        else:
+                            game_started = True
+                    else:
+                        user_input = ""
+                elif event.unicode or event.key == pygame.K_SPACE:
+                    user_input += event.unicode
+        start_button.update_color(user_input)
 
+        pygame.display.update()
+        clock.tick(30)
+
+    game_over = False    
+    user_input = ""
+    # Khởi tạo tốc độ ban đầu
+    speed_mutilplier = 1
+
+    # Định nghĩa biến để xác định thời gian giữa mỗi lần tăng tốc độ
+    start_time = pygame.time.get_ticks()
+    # Trong vòng lặp chính
     while not game_over:
+        # Cập nhật thời gian hiện tại
+        word.speed *= speed_mutilplier
+        current_time = pygame.time.get_ticks()
+        if current_time - start_time >= 1000:
+            speed_mutilplier *= 1.001  # Tăng 0.1% tốc độ
+            start_time = current_time
+        
+
         win.blit(background_image, (0, 0))  # Vẽ ảnh nền
         word.draw()
 
@@ -104,7 +146,7 @@ def main():
                         if len(user_input) < len(word.text):
                             user_input += event.unicode
                         else:
-                            word = Word(random.randrange(0, WIDTH), 0)
+                            word = Word(random.randrange(0, WIDTH - 60), 0, generate_word())
                             user_input = ""
                     else:
                         user_input = ""
