@@ -68,7 +68,7 @@ def main():
     background_image = pygame.transform.scale(background_image, (WIDTH, HEIGHT))
 
     # Tạo tọa độ ban đầu của từ
-    x = random.randrange(0, WIDTH - 200)
+    x = random.randrange(0, WIDTH - 400)
     y = 0
 
     word = Word(x, y,generate_word())
@@ -109,17 +109,17 @@ def main():
     game_over = False    
     user_input = ""
     # Khởi tạo tốc độ ban đầu
-    speed_mutilplier = 1
+    speed_mutilplier = 0.01
 
     # Định nghĩa biến để xác định thời gian giữa mỗi lần tăng tốc độ
     start_time = pygame.time.get_ticks()
     # Trong vòng lặp chính
     while not game_over:
         # Cập nhật thời gian hiện tại
-        word.speed *= speed_mutilplier
+        word.speed += speed_mutilplier
         current_time = pygame.time.get_ticks()
         if current_time - start_time >= 1000:
-            speed_mutilplier *= 1.001  # Tăng 0.1% tốc độ
+            speed_mutilplier += 0.005  # Tăng 0.5% tốc độ
             start_time = current_time
         
 
